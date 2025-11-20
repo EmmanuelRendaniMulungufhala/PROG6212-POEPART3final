@@ -1,0 +1,107 @@
+﻿@using WebApplication1.ViewModels
+@model HRReportsViewModel
+@{
+    ViewData["Title"] = "HR Reports";
+}
+
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2>
+                <i class="fas fa-file-invoice me-2"></i>HR Reports
+            </h2>
+            <p class="text-muted">Generate payment and claims reports</p>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header bg-light">
+            <h5 class="card-title mb-0">Report Parameters</h5>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label asp-for="StartDate" class="form-label">Start Date</label>
+                            <input asp-for="StartDate" type="date" class="form-control" />
+                            <span asp-validation-for="StartDate" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label asp-for="EndDate" class="form-label">End Date</label>
+                            <input asp-for="EndDate" type="date" class="form-control" />
+                            <span asp-validation-for="EndDate" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label asp-for="ReportType" class="form-label">Report Type</label>
+                            <select asp-for="ReportType" class="form-control">
+                                <option value="Payment">Payment Report</option>
+                                <option value="Claims">Claims Report</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-chart-bar me-1"></i>Generate Report
+                </button>
+            </form>
+        </div>
+    </div>
+
+    @if (Model.ApprovedClaims.Any())
+    {
+        <div class="card">
+            <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">Report Results</h5>
+                <div>
+                    <span class="badge bg-primary me-2">@Model.TotalClaims Claims</span>
+                    <span class="badge bg-success">@Model.TotalAmount.ToString("C") Total</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>Lecturer</th>
+                                <th>Month</th>
+                                <th>Hours</th>
+                                <th>Rate</th>
+                                <th>Amount</th>
+                                <th>Approved Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var claim in Model.ApprovedClaims)
+                            {
+                                <tr>
+                                    <td>@claim.Lecturer?.FullName</td>
+                                    <td>@claim.FormattedMonth</td>
+                                    <td>@claim.HoursWorked</td>
+                                    <td>@claim.HourlyRate.ToString("C")</td>
+                                    <td>@claim.TotalAmount.ToString("C")</td>
+                                    <td>@claim.ApprovalDate?.ToString("MMM dd, yyyy")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mt-4">
+                    <a asp-action="GeneratePaymentReport" asp-route-startDate="@Model.StartDate.ToString("yyyy-MM-dd")"
+                       asp-route-endDate="@Model.EndDate.ToString("yyyy-MM-dd")" class="btn btn-success">
+                        <i class="fas fa-download me-1"></i>Download Payment Report
+                    </a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

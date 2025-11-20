@@ -1,0 +1,295 @@
+﻿@using WebApplication1.ViewModels
+@model DepartmentAnalyticsSummaryViewModel
+@{
+    ViewData["Title"] = "Department Analytics";
+}
+
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2>
+                <i class="fas fa-chart-bar me-2"></i>Department Analytics
+            </h2>
+            <p class="text-muted">Comprehensive analytics and performance metrics across departments</p>
+        </div>
+    </div>
+
+    <!-- Filter Section -->
+    <div class="card mb-4">
+        <div class="card-header bg-light">
+            <h5 class="card-title mb-0">Report Parameters</h5>
+        </div>
+        <div class="card-body">
+            <form asp-action="GenerateAnalyticsReport" method="post" class="row">
+                @Html.AntiForgeryToken()
+
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label asp-for="StartDate" class="form-label">Start Date *</label>
+                        <input asp-for="StartDate" type="date" class="form-control" required />
+                        <span asp-validation-for="StartDate" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label asp-for="EndDate" class="form-label">End Date *</label>
+                        <input asp-for="EndDate" type="date" class="form-control" required />
+                        <span asp-validation-for="EndDate" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary me-2">
+                            <i class="fas fa-chart-bar me-1"></i>Generate Analytics
+                        </button>
+                        <a asp-action="DepartmentAnalytics" class="btn btn-outline-secondary">
+                            <i class="fas fa-redo me-1"></i>Reset
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    @if (Model.DepartmentStats.Any())
+    {
+        <!-- Analytics Summary -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card bg-primary text-white">
+                    <div class="card-body text-center">
+                        <h6>Total Departments</h6>
+                        <h3>@Model.DepartmentStats.Count</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-success text-white">
+                    <div class="card-body text-center">
+                        <h6>Total Claims</h6>
+                        <h3>@Model.DepartmentStats.Sum(d => d.TotalClaims)</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-info text-white">
+                    <div class="card-body text-center">
+                        <h6>Total Amount</h6>
+                        <h3>@Model.DepartmentStats.Sum(d => d.TotalAmount).ToString("C")</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-warning text-white">
+                    <div class="card-body text-center">
+                        <h6>Average Processing</h6>
+                        <h3>@Model.DepartmentStats.Average(d => d.AverageProcessingDays).ToString("F1") days</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Department Performance Table -->
+        <div class="card">
+            <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">Department Performance</h5>
+                <small class="text-muted">Period: @Model.StartDate.ToString("MMM dd, yyyy") to @Model.EndDate.ToString("MMM dd, yyyy")</small>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>Department</th>
+                                <th>Total Claims</th>
+                                <th>Approved</th>
+                                <th>Pending</th>
+                                <th>Total Amount</th>
+                                <th>Avg. Processing Days</th>
+                                <th>Approval Rate</th>
+                                <th>Performance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var dept in Model.DepartmentStats)
+                            {
+                                <tr>
+                                    <td>
+                                        <strong>@dept.Department</strong>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-primary">@dept.TotalClaims</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success">@dept.ApprovedClaims</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-warning">@dept.PendingClaims</span>
+                                    </td>
+                                    <td>
+                                        <strong class="text-success">@dept.TotalAmount.ToString("C")</strong>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">@dept.AverageProcessingDays.ToString("F1") days</span>
+                                    </td>
+                                    <td>
+                                        <div class="progress" style="height: 20px;">
+                                            <div class="progress-bar @(dept.ApprovalRate >= 80 ? "bg-success" : dept.ApprovalRate >= 60 ? "bg-warning" : "bg-danger")"
+                                                 style="width: @dept.ApprovalRate%" role="progressbar">
+                                                @dept.ApprovalRate.ToString("F1")%
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        @if (dept.ApprovalRate >= 80)
+                                        {
+                                            <span class="badge bg-success">Excellent</span>
+                                        }
+                                        else if (dept.ApprovalRate >= 60)
+                                        {
+                                            <span class="badge bg-warning">Good</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger">Needs Attention</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="row mt-4">
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-header bg-light">
+                        <h5 class="card-title mb-0">Department Amount Distribution</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="amountChart" width="400" height="300"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-header bg-light">
+                        <h5 class="card-title mb-0">Approval Rates by Department</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="approvalChart" width="400" height="300"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="card">
+            <div class="card-body text-center py-5">
+                <i class="fas fa-chart-bar fa-3x text-muted mb-3"></i>
+                <h4 class="text-muted">No Analytics Data Available</h4>
+                <p class="text-muted">
+                    Select a date range to generate department analytics report.
+                </p>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    @if (Model.DepartmentStats.Any())
+    {
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Prepare data for charts
+                const departments = @Html.Raw(Json.Serialize(Model.DepartmentStats.Select(d => d.Department)));
+                const totalAmounts = @Html.Raw(Json.Serialize(Model.DepartmentStats.Select(d => d.TotalAmount)));
+                const approvalRates = @Html.Raw(Json.Serialize(Model.DepartmentStats.Select(d => d.ApprovalRate)));
+
+                // Generate colors based on approval rates
+                const approvalColors = approvalRates.map(rate => {
+                    if (rate >= 80) return '#28a745';
+                    if (rate >= 60) return '#ffc107';
+                    return '#dc3545';
+                });
+
+                // Amount Distribution Chart
+                const amountCtx = document.getElementById('amountChart').getContext('2d');
+                const amountChart = new Chart(amountCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: departments,
+                        datasets: [{
+                            label: 'Total Amount (R)',
+                            data: totalAmounts,
+                            backgroundColor: '#007bff',
+                            borderColor: '#0056b3',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Total Approved Amount by Department'
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value) {
+                                        return 'R' + value.toLocaleString();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+
+                // Approval Rates Chart
+                const approvalCtx = document.getElementById('approvalChart').getContext('2d');
+                const approvalChart = new Chart(approvalCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: departments,
+                        datasets: [{
+                            label: 'Approval Rate (%)',
+                            data: approvalRates,
+                            backgroundColor: approvalColors,
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Approval Rates by Department'
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 100,
+                                ticks: {
+                                    callback: function(value) {
+                                        return value + '%';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            });
+        </script>
+    }
+}

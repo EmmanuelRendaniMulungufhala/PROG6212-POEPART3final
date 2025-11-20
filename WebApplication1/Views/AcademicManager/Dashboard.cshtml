@@ -1,0 +1,750 @@
+﻿@using WebApplication1.ViewModels
+@model AcademicManagerDashboardViewModel
+@{
+    ViewData["Title"] = "Academic Manager Dashboard";
+}
+
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2>
+                <i class="fas fa-chart-line me-2"></i>Academic Manager Dashboard
+            </h2>
+            <p class="text-muted">Comprehensive overview of academic operations and claims management</p>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-2 col-md-4 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Total Claims
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalClaims</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-file-invoice fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-2 col-md-4 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Pending
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.PendingClaims</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-clock fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-2 col-md-4 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Approved (Month)
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.ApprovedClaimsThisMonth</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-2 col-md-4 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Total Lecturers
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalLecturers</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-users fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-2 col-md-4 mb-4">
+            <div class="card border-left-secondary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-secondary text-uppercase mb-1">
+                                Coordinators
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalCoordinators</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-user-tie fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-2 col-md-4 mb-4">
+            <div class="card border-left-danger shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                                Monthly Amount
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalAmountThisMonth.ToString("C")</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-money-bill-wave fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="card-title mb-0">Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-2 mb-3">
+                            <a asp-action="AllClaims" class="btn btn-primary w-100">
+                                <i class="fas fa-list me-2"></i>All Claims
+                            </a>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <a asp-action="AllLecturers" class="btn btn-success w-100">
+                                <i class="fas fa-users me-2"></i>Lecturers
+                            </a>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <a asp-action="ProgrammeCoordinators" class="btn btn-info w-100">
+                                <i class="fas fa-user-tie me-2"></i>Coordinators
+                            </a>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <a asp-action="DepartmentAnalytics" class="btn btn-warning w-100">
+                                <i class="fas fa-chart-bar me-2"></i>Analytics
+                            </a>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <a asp-action="FinancialReports" class="btn btn-secondary w-100">
+                                <i class="fas fa-file-invoice me-2"></i>Reports
+                            </a>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <a asp-action="AllClaims" asp-route-status="Pending" class="btn btn-danger w-100">
+                                <i class="fas fa-clock me-2"></i>Pending (@Model.PendingClaims)
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Claims Requiring Immediate Attention -->
+    @if (Model.PendingClaims > 0)
+    {
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card border-warning">
+                    <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-exclamation-triangle me-2"></i>High Priority Claims Requiring Action
+                        </h5>
+                        <span class="badge bg-danger">@Model.PendingClaims Urgent</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-warning">
+                                    <tr>
+                                        <th>Lecturer</th>
+                                        <th>Department</th>
+                                        <th>Month</th>
+                                        <th>Hours</th>
+                                        <th>Amount</th>
+                                        <th>Coordinator</th>
+                                        <th>Submitted</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var claim in Model.RecentClaims.Where(c => c.Status == ClaimStatus.Pending).Take(5))
+                                    {
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="avatar-sm bg-primary rounded-circle text-white d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px;">
+                                                        @claim.Lecturer?.FirstName?[0]@claim.Lecturer?.LastName?[0]
+                                                    </div>
+                                                    <div>
+                                                        <div class="fw-bold">@claim.Lecturer?.FullName</div>
+                                                        <small class="text-muted">@claim.Lecturer?.Email</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-info">@claim.Lecturer?.Department</span>
+                                            </td>
+                                            <td>@claim.FormattedMonth</td>
+                                            <td>@claim.HoursWorked</td>
+                                            <td class="fw-bold text-success">@claim.TotalAmount.ToString("C")</td>
+                                            <td>
+                                                <small>@(claim.Lecturer?.Department + " Coordinator")</small>
+                                            </td>
+                                            <td>
+                                                <small>@claim.SubmissionDate.ToString("MMM dd, yyyy")</small>
+                                                <br>
+                                                <small class="text-muted">@claim.SubmissionDate.ToString("hh:mm tt")</small>
+                                            </td>
+                                            <td>
+                                                <div class="btn-group" role="group">
+                                                    <a asp-action="ClaimDetails" asp-route-id="@claim.Id"
+                                                       class="btn btn-sm btn-outline-primary" title="View Details">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                    <button type="button" class="btn btn-sm btn-outline-success approve-btn"
+                                                            data-claim-id="@claim.Id" data-lecturer-name="@claim.Lecturer?.FullName"
+                                                            data-department="@claim.Lecturer?.Department"
+                                                            title="Approve Claim">
+                                                        <i class="fas fa-check"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-sm btn-outline-danger reject-btn"
+                                                            data-claim-id="@claim.Id" data-lecturer-name="@claim.Lecturer?.FullName"
+                                                            data-department="@claim.Lecturer?.Department"
+                                                            title="Reject Claim">
+                                                        <i class="fas fa-times"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-sm btn-outline-warning review-btn"
+                                                            data-claim-id="@claim.Id" data-lecturer-name="@claim.Lecturer?.FullName"
+                                                            data-department="@claim.Lecturer?.Department"
+                                                            title="Mark for Review">
+                                                        <i class="fas fa-search"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        @if (Model.PendingClaims > 5)
+                        {
+                            <div class="text-center mt-3">
+                                <a asp-action="AllClaims" asp-route-status="Pending" class="btn btn-warning">
+                                    View All @Model.PendingClaims Pending Claims
+                                </a>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="row">
+        <!-- Recent Claims -->
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Recent Department Claims</h5>
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            Filter by Status
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" asp-action="AllClaims">All Claims</a></li>
+                            <li><a class="dropdown-item" asp-action="AllClaims" asp-route-status="Pending">Pending</a></li>
+                            <li><a class="dropdown-item" asp-action="AllClaims" asp-route-status="Approved">Approved</a></li>
+                            <li><a class="dropdown-item" asp-action="AllClaims" asp-route-status="Rejected">Rejected</a></li>
+                            <li><a class="dropdown-item" asp-action="AllClaims" asp-route-status="UnderReview">Under Review</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card-body">
+                    @if (Model.RecentClaims.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-sm table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Lecturer</th>
+                                        <th>Department</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                        <th>Submitted</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var claim in Model.RecentClaims)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <small class="fw-bold">@claim.Lecturer?.FullName</small>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-light text-dark">@claim.Lecturer?.Department</span>
+                                            </td>
+                                            <td>
+                                                <small class="fw-bold">@claim.TotalAmount.ToString("C")</small>
+                                            </td>
+                                            <td>
+                                                <span class="badge @claim.StatusBadgeClass">@claim.Status</span>
+                                            </td>
+                                            <td>
+                                                <small>@claim.SubmissionDate.ToString("MMM dd")</small>
+                                            </td>
+                                            <td>
+                                                <div class="btn-group" role="group">
+                                                    <a asp-action="ClaimDetails" asp-route-id="@claim.Id"
+                                                       class="btn btn-sm btn-outline-primary" title="View Details">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                    @if (claim.Status == ClaimStatus.Pending || claim.Status == ClaimStatus.UnderReview)
+                                                    {
+                                                        <button type="button" class="btn btn-sm btn-outline-success approve-btn"
+                                                                data-claim-id="@claim.Id" data-lecturer-name="@claim.Lecturer?.FullName"
+                                                                data-department="@claim.Lecturer?.Department"
+                                                                title="Approve Claim">
+                                                            <i class="fas fa-check"></i>
+                                                        </button>
+                                                        <button type="button" class="btn btn-sm btn-outline-danger reject-btn"
+                                                                data-claim-id="@claim.Id" data-lecturer-name="@claim.Lecturer?.FullName"
+                                                                data-department="@claim.Lecturer?.Department"
+                                                                title="Reject Claim">
+                                                            <i class="fas fa-times"></i>
+                                                        </button>
+                                                    }
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-4">
+                            <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                            <h5 class="text-success">All Claims Processed</h5>
+                            <p class="text-muted">No claims requiring attention.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column -->
+        <div class="col-lg-6">
+            <!-- Top Departments -->
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="card-title mb-0">Top Departments (This Month)</h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.TopDepartments.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-sm table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Department</th>
+                                        <th>Claims</th>
+                                        <th>Total Amount</th>
+                                        <th>Average</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var dept in Model.TopDepartments)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <strong>@dept.Department</strong>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-primary">@dept.ClaimCount</span>
+                                            </td>
+                                            <td>
+                                                <strong class="text-success">@dept.TotalAmount.ToString("C")</strong>
+                                            </td>
+                                            <td>
+                                                <small>@((dept.ClaimCount > 0 ? dept.TotalAmount / dept.ClaimCount : 0).ToString("C"))</small>
+                                            </td>
+                                            <td>
+                                                <a asp-action="DepartmentClaims" asp-route-department="@dept.Department"
+                                                   class="btn btn-sm btn-outline-info">
+                                                    <i class="fas fa-external-link-alt"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-4">
+                            <i class="fas fa-university fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No Department Data</h5>
+                            <p class="text-muted">No claims data available for this month.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Statistics -->
+            <div class="card mt-4">
+                <div class="card-header bg-light">
+                    <h5 class="card-title mb-0">System Overview</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="claimsStatusChart" width="100" height="200"></canvas>
+                </div>
+            </div>
+
+            <!-- Quick Department Overview -->
+            <div class="card mt-4">
+                <div class="card-header bg-light">
+                    <h5 class="card-title mb-0">Department Performance</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-4">
+                            <div class="h4 text-primary">@Model.TotalDepartments</div>
+                            <small class="text-muted">Departments</small>
+                        </div>
+                        <div class="col-4">
+                            <div class="h4 text-success">@Model.ApprovedClaimsThisMonth</div>
+                            <small class="text-muted">Approved This Month</small>
+                        </div>
+                        <div class="col-4">
+                            <div class="h4 text-warning">@Model.PendingClaims</div>
+                            <small class="text-muted">Pending Review</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Approve Claim Modal -->
+<div class="modal fade" id="approveModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title">Approve Claim</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="approveForm" method="post">
+                <div class="modal-body">
+                    <p>Are you sure you want to approve the claim for <strong id="approveLecturerName"></strong>?</p>
+                    <p><strong>Department:</strong> <span id="approveDepartment" class="badge bg-info"></span></p>
+                    <div class="mb-3">
+                        <label for="approvalNotes" class="form-label">Approval Notes (Optional):</label>
+                        <textarea class="form-control" id="approvalNotes" name="approvalNotes" rows="3"
+                                  placeholder="Add any notes or comments..."></textarea>
+                    </div>
+                    <input type="hidden" id="approveClaimId" name="claimId">
+                    @Html.AntiForgeryToken()
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success">Approve Claim</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Reject Claim Modal -->
+<div class="modal fade" id="rejectModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">Reject Claim</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="rejectForm" method="post">
+                <div class="modal-body">
+                    <p>Are you sure you want to reject the claim for <strong id="rejectLecturerName"></strong>?</p>
+                    <p><strong>Department:</strong> <span id="rejectDepartment" class="badge bg-info"></span></p>
+                    <div class="mb-3">
+                        <label for="rejectionNotes" class="form-label">Rejection Notes (Required):</label>
+                        <textarea class="form-control" id="rejectionNotes" name="rejectionNotes" rows="3"
+                                  placeholder="Please provide reason for rejection..." required></textarea>
+                        <div class="invalid-feedback">Please provide rejection notes.</div>
+                    </div>
+                    <input type="hidden" id="rejectClaimId" name="claimId">
+                    @Html.AntiForgeryToken()
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger">Reject Claim</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Mark for Review Modal -->
+<div class="modal fade" id="reviewModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-warning text-dark">
+                <h5 class="modal-title">Mark Claim for Review</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="reviewForm" method="post">
+                <div class="modal-body">
+                    <p>Mark claim for <strong id="reviewLecturerName"></strong> as Under Review?</p>
+                    <p><strong>Department:</strong> <span id="reviewDepartment" class="badge bg-info"></span></p>
+                    <div class="mb-3">
+                        <label for="reviewNotes" class="form-label">Review Notes (Optional):</label>
+                        <textarea class="form-control" id="reviewNotes" name="reviewNotes" rows="3"
+                                  placeholder="Add any notes or questions..."></textarea>
+                    </div>
+                    <input type="hidden" id="reviewClaimId" name="claimId">
+                    @Html.AntiForgeryToken()
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-warning">Mark for Review</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .avatar-sm {
+            width: 40px;
+            height: 40px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .border-left-primary {
+            border-left: 4px solid #4e73df !important;
+        }
+
+        .border-left-success {
+            border-left: 4px solid #1cc88a !important;
+        }
+
+        .border-left-info {
+            border-left: 4px solid #36b9cc !important;
+        }
+
+        .border-left-warning {
+            border-left: 4px solid #f6c23e !important;
+        }
+
+        .border-left-danger {
+            border-left: 4px solid #e74a3b !important;
+        }
+
+        .border-left-secondary {
+            border-left: 4px solid #858796 !important;
+        }
+
+        .text-xs {
+            font-size: 0.7rem;
+        }
+
+        .table tbody tr:hover {
+            background-color: rgba(0, 0, 0, 0.025);
+        }
+
+        .card {
+            transition: transform 0.2s ease-in-out;
+        }
+
+            .card:hover {
+                transform: translateY(-2px);
+            }
+
+        .btn-group .btn {
+            border-radius: 0.375rem;
+        }
+
+            .btn-group .btn:not(:first-child) {
+                margin-left: 1px;
+            }
+    </style>
+}
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Claims Status Chart
+        var ctx = document.getElementById('claimsStatusChart').getContext('2d');
+        var claimsStatusChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Pending', 'Approved', 'Rejected', 'Under Review'],
+                datasets: [{
+                    data: [
+                        @Model.PendingClaims,
+                        @Model.ApprovedClaims,
+                        @Model.RejectedClaims,
+                        @Model.UnderReviewClaims
+                    ],
+                    backgroundColor: [
+                        '#ffc107',
+                        '#198754',
+                        '#dc3545',
+                        '#0dcaf0'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+
+        // Modal handlers
+        document.addEventListener('DOMContentLoaded', function() {
+            // Approve claim
+            document.querySelectorAll('.approve-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const claimId = this.dataset.claimId;
+                    const lecturerName = this.dataset.lecturerName;
+                    const department = this.dataset.department;
+
+                    document.getElementById('approveLecturerName').textContent = lecturerName;
+                    document.getElementById('approveDepartment').textContent = department;
+                    document.getElementById('approveClaimId').value = claimId;
+
+                    const approveModal = new bootstrap.Modal(document.getElementById('approveModal'));
+                    approveModal.show();
+                });
+            });
+
+            // Reject claim
+            document.querySelectorAll('.reject-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const claimId = this.dataset.claimId;
+                    const lecturerName = this.dataset.lecturerName;
+                    const department = this.dataset.department;
+
+                    document.getElementById('rejectLecturerName').textContent = lecturerName;
+                    document.getElementById('rejectDepartment').textContent = department;
+                    document.getElementById('rejectClaimId').value = claimId;
+
+                    const rejectModal = new bootstrap.Modal(document.getElementById('rejectModal'));
+                    rejectModal.show();
+                });
+            });
+
+            // Mark for review
+            document.querySelectorAll('.review-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const claimId = this.dataset.claimId;
+                    const lecturerName = this.dataset.lecturerName;
+                    const department = this.dataset.department;
+
+                    document.getElementById('reviewLecturerName').textContent = lecturerName;
+                    document.getElementById('reviewDepartment').textContent = department;
+                    document.getElementById('reviewClaimId').value = claimId;
+
+                    const reviewModal = new bootstrap.Modal(document.getElementById('reviewModal'));
+                    reviewModal.show();
+                });
+            });
+
+            // Form submissions
+            document.getElementById('approveForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                this.action = '@Url.Action("ApproveClaim", "AcademicManager")';
+                this.submit();
+            });
+
+            document.getElementById('rejectForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const notes = document.getElementById('rejectionNotes').value;
+                if (!notes.trim()) {
+                    document.getElementById('rejectionNotes').classList.add('is-invalid');
+                    return;
+                }
+                this.action = '@Url.Action("RejectClaim", "AcademicManager")';
+                this.submit();
+            });
+
+            document.getElementById('reviewForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                this.action = '@Url.Action("SendForReview", "AcademicManager")';
+                this.submit();
+            });
+
+            // Clear validation on input
+            document.getElementById('rejectionNotes').addEventListener('input', function() {
+                this.classList.remove('is-invalid');
+            });
+
+            // Add loading states to buttons
+            const forms = document.querySelectorAll('#approveForm, #rejectForm, #reviewForm');
+            forms.forEach(form => {
+                form.addEventListener('submit', function() {
+                    const submitButton = this.querySelector('button[type="submit"]');
+                    submitButton.disabled = true;
+                    submitButton.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Processing...';
+                });
+            });
+        });
+
+        // Load additional statistics
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('@Url.Action("GetAcademicManagerStatistics", "AcademicManager")')
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Academic Manager statistics:', data);
+                    // You can use this data to update other charts
+                })
+                .catch(error => console.error('Error loading statistics:', error));
+        });
+    </script>
+}

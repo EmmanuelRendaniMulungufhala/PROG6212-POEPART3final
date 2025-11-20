@@ -1,0 +1,208 @@
+﻿@using Microsoft.EntityFrameworkCore
+@using WebApplication1.Data
+@model List<ApplicationUser>
+@{
+    ViewData["Title"] = "All Lecturers";
+    var departments = ViewBag.Departments as List<string> ?? new List<string>();
+
+    // Get the DbContext safely
+    var dbContext = Context.RequestServices.GetService<ApplicationDbContext>();
+}
+
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2>
+                    <i class="fas fa-users me-2"></i>All Lecturers
+                </h2>
+                <span class="badge bg-primary">@Model.Count Lecturers</span>
+            </div>
+            <p class="text-muted">Manage and monitor all lecturers across departments</p>
+        </div>
+    </div>
+
+    <!-- Filter Section -->
+    <div class="card mb-4">
+        <div class="card-header bg-light">
+            <h5 class="card-title mb-0">Filter Lecturers</h5>
+        </div>
+        <div class="card-body">
+            <form method="get" class="row">
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label for="departmentFilter" class="form-label">Department</label>
+                        <select id="departmentFilter" name="department" class="form-control" onchange="this.form.submit()">
+                            <option value="">All Departments</option>
+                            @foreach (var dept in departments)
+                            {
+                                <option value="@dept">@dept</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label for="statusFilter" class="form-label">Status</label>
+                        <select id="statusFilter" name="status" class="form-control" onchange="this.form.submit()">
+                            <option value="">All Status</option>
+                            <option value="Active">Active</option>
+                            <option value="Inactive">Inactive</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary me-2">
+                            <i class="fas fa-filter me-1"></i>Apply Filters
+                        </button>
+                        <a asp-action="AllLecturers" class="btn btn-outline-secondary">
+                            <i class="fas fa-redo me-1"></i>Reset
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header bg-light">
+            <h5 class="card-title mb-0">Lecturers List</h5>
+        </div>
+        <div class="card-body">
+            @if (Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Department</th>
+                                <th>Employee ID</th>
+                                <th>Date Joined</th>
+                                <th>Status</th>
+                                <th>Total Claims</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var lecturer in Model)
+                            {
+                                // Safe database access with null checks
+                                int totalClaims = 0;
+                                int approvedClaims = 0;
+                                decimal totalAmount = 0;
+
+                                if (dbContext != null)
+                                {
+                                    totalClaims = await dbContext.Claims.CountAsync(c => c.LecturerId == lecturer.Id);
+                                    approvedClaims = await dbContext.Claims.CountAsync(c => c.LecturerId == lecturer.Id && c.Status == ClaimStatus.Approved);
+                                    totalAmount = await dbContext.Claims
+                                    .Where(c => c.LecturerId == lecturer.Id && c.Status == ClaimStatus.Approved)
+                                    .SumAsync(c => c.TotalAmount);
+                                }
+
+                                <tr>
+                                    <td>
+                                        <strong>@lecturer.FullName</strong>
+                                    </td>
+                                    <td>@lecturer.Email</td>
+                                    <td>
+                                        <span class="badge bg-secondary">@lecturer.Department</span>
+                                    </td>
+                                    <td>@lecturer.EmployeeId</td>
+                                    <td>@lecturer.DateJoined.ToString("MMM dd, yyyy")</td>
+                                    <td>
+                                        @if (lecturer.IsActive)
+                                        {
+                                            <span class="badge bg-success">Active</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger">Inactive</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <span class="badge bg-primary">@totalClaims Total</span>
+                                            <br />
+                                            <small class="text-muted">@approvedClaims Approved</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <a asp-action="LecturerDetails" asp-route-id="@lecturer.Id"
+                                               class="btn btn-outline-primary" title="View Details">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a asp-action="AllClaims" asp-route-lecturer="@lecturer.LastName"
+                                               class="btn btn-outline-info" title="View Claims">
+                                                <i class="fas fa-file-invoice"></i>
+                                            </a>
+                                        </div>
+                                        @if (totalAmount > 0)
+                                        {
+                                            <div class="mt-1">
+                                                <small class="text-success">
+                                                    <i class="fas fa-money-bill-wave"></i>
+                                                    @totalAmount.ToString("C") total
+                                                </small>
+                                            </div>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Department Summary -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <h5>Department Summary</h5>
+                        <div class="row">
+                            @{
+                                var deptSummary = Model.GroupBy(l => l.Department)
+                                .Select(g => new { Department = g.Key, Count = g.Count() })
+                                .OrderByDescending(x => x.Count);
+                            }
+                            @foreach (var dept in deptSummary)
+                            {
+                                <div class="col-md-3 mb-2">
+                                    <div class="card bg-light">
+                                        <div class="card-body py-2">
+                                            <h6 class="card-title mb-0">@dept.Department</h6>
+                                            <span class="badge bg-primary">@dept.Count lecturers</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-4">
+                    <i class="fas fa-users-slash fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">No lecturers found</h5>
+                    <p class="text-muted">Try adjusting your filters to see more results.</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const department = urlParams.get('department');
+            const status = urlParams.get('status');
+
+            if (department) document.getElementById('departmentFilter').value = department;
+            if (status) document.getElementById('statusFilter').value = status;
+        });
+    </script>
+}

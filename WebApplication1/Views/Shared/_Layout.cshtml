@@ -1,0 +1,363 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - CMCS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+    <!-- Add this line to render the Styles section -->
+    @RenderSection("Styles", required: false)
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" asp-controller="Home" asp-action="Index">
+                    <i class="fas fa-file-invoice-dollar me-2"></i>
+                    CMCS
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto">
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <!-- Common menu items for all authenticated users -->
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Home" asp-action="Index">
+                                    <i class="fas fa-home me-1"></i>Home
+                                </a>
+                            </li>
+
+                            @if (User.IsInRole("Lecturer"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Claims" asp-action="Create">
+                                        <i class="fas fa-plus-circle me-1"></i>Submit Claim
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Claims" asp-action="Index">
+                                        <i class="fas fa-list me-1"></i>My Claims
+                                    </a>
+                                </li>
+                            }
+
+                            @if (User.IsInRole("ProgrammeCoordinator"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="ProgrammeCoordinator" asp-action="Dashboard">
+                                        <i class="fas fa-tachometer-alt me-1"></i>Dashboard
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="ProgrammeCoordinator" asp-action="ReviewClaims">
+                                        <i class="fas fa-tasks me-1"></i>Review Claims
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="ProgrammeCoordinator" asp-action="DepartmentLecturers">
+                                        <i class="fas fa-users me-1"></i>Department Lecturers
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="ProgrammeCoordinator" asp-action="DepartmentReports">
+                                        <i class="fas fa-chart-bar me-1"></i>Reports
+                                    </a>
+                                </li>
+                            }
+
+                            @if (User.IsInRole("AcademicManager"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="AcademicManager" asp-action="Dashboard">
+                                        <i class="fas fa-tachometer-alt me-1"></i>Dashboard
+                                    </a>
+                                </li>
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" id="claimsDropdown" role="button" data-bs-toggle="dropdown">
+                                        <i class="fas fa-file-invoice me-1"></i>Claims
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" asp-controller="AcademicManager" asp-action="AllClaims"><i class="fas fa-list me-1"></i>All Claims</a></li>
+                                        <li><a class="dropdown-item" asp-controller="AcademicManager" asp-action="PendingClaims"><i class="fas fa-clock me-1"></i>Pending Claims</a></li>
+                                        <li><a class="dropdown-item" asp-controller="AcademicManager" asp-action="ApprovedClaims"><i class="fas fa-check-circle me-1"></i>Approved Claims</a></li>
+                                    </ul>
+                                </li>
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" id="managementDropdown" role="button" data-bs-toggle="dropdown">
+                                        <i class="fas fa-users me-1"></i>Management
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" asp-controller="AcademicManager" asp-action="AllLecturers"><i class="fas fa-user-graduate me-1"></i>All Lecturers</a></li>
+                                        <li><a class="dropdown-item" asp-controller="AcademicManager" asp-action="ProgrammeCoordinators"><i class="fas fa-user-tie me-1"></i>Coordinators</a></li>
+                                    </ul>
+                                </li>
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" id="analyticsDropdown" role="button" data-bs-toggle="dropdown">
+                                        <i class="fas fa-chart-line me-1"></i>Analytics
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" asp-controller="AcademicManager" asp-action="DepartmentAnalytics"><i class="fas fa-chart-bar me-1"></i>Department Analytics</a></li>
+                                        <li><a class="dropdown-item" asp-controller="AcademicManager" asp-action="FinancialReports"><i class="fas fa-file-invoice-dollar me-1"></i>Financial Reports</a></li>
+                                        <li><a class="dropdown-item" asp-controller="AcademicManager" asp-action="PerformanceMetrics"><i class="fas fa-chart-pie me-1"></i>Performance Metrics</a></li>
+                                    </ul>
+                                </li>
+                            }
+
+                            @if (User.IsInRole("HR"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="HR" asp-action="Dashboard">
+                                        <i class="fas fa-tachometer-alt me-1"></i>Dashboard
+                                    </a>
+                                </li>
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" id="claimsManagementDropdown" role="button" data-bs-toggle="dropdown">
+                                        <i class="fas fa-tasks me-1"></i>Claims Management
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" asp-controller="HR" asp-action="ProcessClaims"><i class="fas fa-cogs me-1"></i>Process Claims</a></li>
+                                        <li><a class="dropdown-item" asp-controller="HR" asp-action="PendingClaims"><i class="fas fa-clock me-1"></i>Pending Claims</a></li>
+                                        <li><a class="dropdown-item" asp-controller="HR" asp-action="ApprovedClaims"><i class="fas fa-check-circle me-1"></i>Approved Claims</a></li>
+                                        <li><a class="dropdown-item" asp-controller="HR" asp-action="RejectedClaims"><i class="fas fa-times-circle me-1"></i>Rejected Claims</a></li>
+                                    </ul>
+                                </li>
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" id="userManagementDropdown" role="button" data-bs-toggle="dropdown">
+                                        <i class="fas fa-users-cog me-1"></i>User Management
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" asp-controller="HR" asp-action="LecturerManagement"><i class="fas fa-user-graduate me-1"></i>Lecturer Management</a></li>
+                                        <li><a class="dropdown-item" asp-controller="HR" asp-action="CreateUser"><i class="fas fa-user-plus me-1"></i>Create User</a></li>
+                                        <li><a class="dropdown-item" asp-controller="HR" asp-action="UserRoles"><i class="fas fa-user-shield me-1"></i>User Roles</a></li>
+                                    </ul>
+                                </li>
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" id="reportsDropdown" role="button" data-bs-toggle="dropdown">
+                                        <i class="fas fa-file-invoice me-1"></i>Reports & Analytics
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" asp-controller="HR" asp-action="Reports"><i class="fas fa-chart-bar me-1"></i>Claims Reports</a></li>
+                                        <li><a class="dropdown-item" asp-controller="HR" asp-action="FinancialAnalytics"><i class="fas fa-chart-line me-1"></i>Financial Analytics</a></li>
+                                        <li>
+                                            <a class="dropdown-item" asp-controller="HR" asp-action="GeneratePaymentReport"
+                                               asp-route-startDate="@DateTime.Now.AddMonths(-1).ToString("yyyy-MM-dd")"
+                                               asp-route-endDate="@DateTime.Now.ToString("yyyy-MM-dd")">
+                                                <i class="fas fa-file-pdf me-1"></i>Payment Report
+                                            </a>
+                                        </li>
+                                        <li><a class="dropdown-item" asp-controller="HR" asp-action="SystemAudit"><i class="fas fa-clipboard-list me-1"></i>System Audit</a></li>
+                                    </ul>
+                                </li>
+                            }
+                        }
+                        else
+                        {
+                            <!-- Public menu items for non-authenticated users -->
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Home" asp-action="Index">
+                                    <i class="fas fa-home me-1"></i>Home
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Home" asp-action="About">
+                                    <i class="fas fa-info-circle me-1"></i>About
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Home" asp-action="Contact">
+                                    <i class="fas fa-envelope me-1"></i>Contact
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                    <ul class="navbar-nav">
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <!-- Notifications -->
+                            <li class="nav-item">
+                                <a class="nav-link position-relative" asp-controller="Account" asp-action="Notifications">
+                                    <i class="fas fa-bell me-1"></i>
+                                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                        2
+                                        <span class="visually-hidden">unread notifications</span>
+                                    </span>
+                                </a>
+                            </li>
+
+                            <!-- User dropdown -->
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                                    <i class="fas fa-user-circle me-1"></i>@User.Identity.Name
+                                    @{
+                                        var roleBadge = "";
+                                        if (User.IsInRole("HR")) roleBadge = "HR";
+                                        else if (User.IsInRole("AcademicManager")) roleBadge = "Academic Manager";
+                                        else if (User.IsInRole("ProgrammeCoordinator")) roleBadge = "Coordinator";
+                                        else if (User.IsInRole("Lecturer")) roleBadge = "Lecturer";
+                                    }
+                                    @if (!string.IsNullOrEmpty(roleBadge))
+                                    {
+                                        <span class="badge bg-light text-dark ms-1">@roleBadge</span>
+                                    }
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li>
+                                        <div class="dropdown-header">
+                                            <i class="fas fa-user me-1"></i>My Account
+                                        </div>
+                                    </li>
+                                    <li><a class="dropdown-item" asp-controller="Account" asp-action="Profile"><i class="fas fa-user-cog me-1"></i>Profile Settings</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Account" asp-action="ChangePassword"><i class="fas fa-key me-1"></i>Change Password</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <div class="dropdown-header">
+                                            <small class="text-muted">Signed in as @User.Identity.Name</small>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                                            <button type="submit" class="dropdown-item text-danger">
+                                                <i class="fas fa-sign-out-alt me-1"></i>Logout
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link btn btn-outline-light btn-sm" asp-controller="Account" asp-action="Login">
+                                    <i class="fas fa-sign-in-alt me-1"></i>Login
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <main role="main" class="pb-3 mt-4">
+            <!-- Demo Accounts Alert for non-authenticated users on home page -->
+            @if (!User.Identity.IsAuthenticated && ViewContext.RouteData.Values["controller"]?.ToString() == "Home" && ViewContext.RouteData.Values["action"]?.ToString() == "Index")
+            {
+                <div class="alert alert-info alert-dismissible fade show" role="alert">
+                    <h5 class="alert-heading"><i class="fas fa-users me-2"></i>Demo Accounts Available</h5>
+                    <p class="mb-2">Use these credentials to test the system (Password: <strong>Password123!</strong> for all):</p>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <ul class="list-unstyled mb-0">
+                                <li><strong>HR:</strong> hr@iet.com</li>
+                                <li><strong>Lecturer:</strong> lecturer@iet.com</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <ul class="list-unstyled mb-0">
+                                <li><strong>Coordinator:</strong> coordinator@iet.com</li>
+                                <li><strong>Manager:</strong> manager@iet.com</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
+            <!-- Breadcrumb Navigation -->
+            @if (ViewContext.RouteData.Values["controller"]?.ToString() != "Home")
+            {
+                <nav aria-label="breadcrumb" class="mb-4">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a asp-controller="Home" asp-action="Index">
+                                <i class="fas fa-home me-1"></i>Home
+                            </a>
+                        </li>
+                        @if (!string.IsNullOrEmpty(ViewContext.RouteData.Values["controller"]?.ToString()))
+                        {
+                            <li class="breadcrumb-item">
+                                @ViewContext.RouteData.Values["controller"]?.ToString()
+                            </li>
+                        }
+                        @if (!string.IsNullOrEmpty(ViewContext.RouteData.Values["action"]?.ToString()) &&
+                                            ViewContext.RouteData.Values["action"]?.ToString() != "Index")
+                        {
+                            <li class="breadcrumb-item active" aria-current="page">
+                                @ViewContext.RouteData.Values["action"]?.ToString()
+                            </li>
+                        }
+                    </ol>
+                </nav>
+            }
+
+            <!-- Alert Messages -->
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="fas fa-check-circle me-2"></i>@TempData["Success"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="fas fa-exclamation-triangle me-2"></i>@TempData["Error"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+            @if (TempData["Warning"] != null)
+            {
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    <i class="fas fa-exclamation-circle me-2"></i>@TempData["Warning"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+            @if (TempData["Info"] != null)
+            {
+                <div class="alert alert-info alert-dismissible fade show" role="alert">
+                    <i class="fas fa-info-circle me-2"></i>@TempData["Info"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted bg-light mt-5">
+        <div class="container py-3">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <span class="text-muted">
+                        <i class="fas fa-copyright me-1"></i> 2025 - Contract Monthly Claim System - The IET
+                    </span>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <span class="badge bg-primary me-2">v2.1</span>
+                    <small class="text-muted">
+                        <i class="fas fa-clock me-1"></i>@DateTime.Now.ToString("MMM dd, yyyy HH:mm")
+                    </small>
+                    <br>
+                    <small class="text-muted">
+                        <i class="fas fa-key me-1"></i>Demo Password: Password123!
+                    </small>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <!-- Render Scripts Section -->
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

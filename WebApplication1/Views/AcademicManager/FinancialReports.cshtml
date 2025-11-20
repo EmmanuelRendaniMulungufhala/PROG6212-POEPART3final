@@ -1,0 +1,268 @@
+﻿@using WebApplication1.ViewModels
+@model FinancialReportsViewModel
+@{
+    ViewData["Title"] = "Financial Reports";
+}
+
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2>
+                <i class="fas fa-file-invoice-dollar me-2"></i>Financial Reports
+            </h2>
+            <p class="text-muted">Comprehensive financial reporting and analysis</p>
+        </div>
+    </div>
+
+    <!-- Report Parameters -->
+    <div class="card mb-4">
+        <div class="card-header bg-light">
+            <h5 class="card-title mb-0">Report Parameters</h5>
+        </div>
+        <div class="card-body">
+            <form asp-action="GenerateFinancialReport" method="post" class="row">
+                @Html.AntiForgeryToken()
+
+                <div class="col-md-3">
+                    <div class="mb-3">
+                        <label asp-for="StartDate" class="form-label">Start Date *</label>
+                        <input asp-for="StartDate" type="date" class="form-control" required />
+                        <span asp-validation-for="StartDate" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="mb-3">
+                        <label asp-for="EndDate" class="form-label">End Date *</label>
+                        <input asp-for="EndDate" type="date" class="form-control" required />
+                        <span asp-validation-for="EndDate" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="mb-3 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary me-2">
+                            <i class="fas fa-chart-line me-1"></i>Generate Report
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="mb-3 d-flex align-items-end">
+                        <a asp-action="GenerateComprehensiveReport"
+                           asp-route-startDate="@Model.StartDate.ToString("yyyy-MM-dd")"
+                           asp-route-endDate="@Model.EndDate.ToString("yyyy-MM-dd")"
+                           class="btn btn-success w-100" target="_blank">
+                            <i class="fas fa-file-pdf me-1"></i>Download PDF
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    @if (Model.ApprovedClaims.Any())
+    {
+        <!-- Financial Summary -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card border-left-primary shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                    Total Approved Claims
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalClaims</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card border-left-success shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                    Total Amount
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalAmount.ToString("C")</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-money-bill-wave fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card border-left-info shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                    Average per Claim
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                    @((Model.TotalClaims > 0 ? Model.TotalAmount / Model.TotalClaims : 0).ToString("C"))
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-calculator fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card border-left-warning shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                    Period
+                                </div>
+                                <div class="h6 mb-0 font-weight-bold text-gray-800">
+                                    @Model.StartDate.ToString("MMM dd, yyyy")<br />
+                                    to<br />
+                                    @Model.EndDate.ToString("MMM dd, yyyy")
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-calendar-alt fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Monthly Trends -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-light">
+                        <h5 class="card-title mb-0">Monthly Trends (Last 6 Months)</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="trendChart" width="400" height="150"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Claims Details -->
+        <div class="card">
+            <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">Approved Claims Details</h5>
+                <span class="badge bg-success">@Model.TotalClaims claims • @Model.TotalAmount.ToString("C") total</span>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>Lecturer</th>
+                                <th>Department</th>
+                                <th>Month</th>
+                                <th>Hours</th>
+                                <th>Rate</th>
+                                <th>Amount</th>
+                                <th>Approved Date</th>
+                                <th>Approved By</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var claim in Model.ApprovedClaims)
+                            {
+                                <tr>
+                                    <td>@claim.Lecturer?.FullName</td>
+                                    <td>
+                                        <span class="badge bg-secondary">@claim.Lecturer?.Department</span>
+                                    </td>
+                                    <td>@claim.FormattedMonth</td>
+                                    <td>@claim.HoursWorked.ToString("F1")</td>
+                                    <td>@claim.HourlyRate.ToString("C")</td>
+                                    <td>
+                                        <strong class="text-success">@claim.TotalAmount.ToString("C")</strong>
+                                    </td>
+                                    <td>@claim.ApprovalDate?.ToString("MMM dd, yyyy")</td>
+                                    <td>@claim.ApprovedBy</td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr class="table-secondary">
+                                <td colspan="5" class="text-end"><strong>Grand Total:</strong></td>
+                                <td colspan="3"><strong>@Model.TotalAmount.ToString("C")</strong></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="card">
+            <div class="card-body text-center py-5">
+                <i class="fas fa-file-invoice-dollar fa-3x text-muted mb-3"></i>
+                <h4 class="text-muted">No Financial Data Available</h4>
+                <p class="text-muted">
+                    Select a date range to generate financial reports.
+                </p>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    @if (Model.MonthlyTrends.Any())
+    {
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const trendCtx = document.getElementById('trendChart').getContext('2d');
+                const trendChart = new Chart(trendCtx, {
+                    type: 'line',
+                    data: {
+                        labels: @Html.Raw(Json.Serialize(Model.MonthlyTrends.Select(m => m.MonthName))),
+                        datasets: [{
+                            label: 'Total Amount (R)',
+                            data: @Html.Raw(Json.Serialize(Model.MonthlyTrends.Select(m => m.TotalAmount))),
+                            borderColor: '#007bff',
+                            backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Monthly Claims Amount Trend'
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value) {
+                                        return 'R' + value.toLocaleString();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            });
+        </script>
+    }
+}

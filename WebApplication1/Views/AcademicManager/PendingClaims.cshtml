@@ -1,0 +1,240 @@
+﻿@model IEnumerable<ClaimModel>
+@{
+    ViewData["Title"] = "Pending Claims - Academic Manager";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>
+                    <i class="fas fa-clock text-warning me-2"></i>Pending Claims
+                </h2>
+                <div>
+                    <span class="badge bg-warning fs-6">@Model.Count() Pending</span>
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="card mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="card-title mb-0">Filter Claims</h5>
+                </div>
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-4">
+                            <label for="department" class="form-label">Department</label>
+                            <select class="form-select" id="department" name="department">
+                                <option value="">All Departments</option>
+                                <option value="Computer Science">Computer Science</option>
+                                <option value="Information Technology">Information Technology</option>
+                                <option value="Software Engineering">Software Engineering</option>
+                                <option value="Data Science">Data Science</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="month" class="form-label">Month</label>
+                            <input type="month" class="form-control" id="month" name="month" value="@DateTime.Now.ToString("yyyy-MM")">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">&nbsp;</label>
+                            <div>
+                                <button type="submit" class="btn btn-primary me-2">
+                                    <i class="fas fa-filter me-1"></i>Apply Filters
+                                </button>
+                                <a href="@Url.Action("PendingClaims")" class="btn btn-outline-secondary">
+                                    <i class="fas fa-redo me-1"></i>Reset
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            @if (Model.Any())
+            {
+                <div class="card">
+                    <div class="card-header bg-warning text-dark">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-exclamation-circle me-1"></i>
+                            Claims Awaiting Academic Review
+                        </h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Lecturer</th>
+                                        <th>Department</th>
+                                        <th>Month</th>
+                                        <th>Hours</th>
+                                        <th>Rate</th>
+                                        <th>Total Amount</th>
+                                        <th>Submitted</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var claim in Model)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="avatar-sm bg-primary rounded-circle d-flex align-items-center justify-content-center me-2">
+                                                        <span class="text-white fw-bold">@claim.Lecturer?.FirstName?[0]@claim.Lecturer?.LastName?[0]</span>
+                                                    </div>
+                                                    <div>
+                                                        <strong>@claim.Lecturer?.FirstName @claim.Lecturer?.LastName</strong>
+                                                        <br>
+                                                        <small class="text-muted">@claim.Lecturer?.EmployeeId</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-info">@claim.Lecturer?.Department</span>
+                                            </td>
+                                            <td>
+                                                <strong>@claim.Month.ToString("MMM yyyy")</strong>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-secondary">@claim.HoursWorked hours</span>
+                                            </td>
+                                            <td>
+                                                <strong>R @claim.HourlyRate.ToString("N2")</strong>
+                                            </td>
+                                            <td>
+                                                <strong class="text-success">R @claim.TotalAmount.ToString("N2")</strong>
+                                            </td>
+                                            <td>
+                                                <small class="text-muted">@claim.SubmissionDate.ToString("MMM dd, yyyy")</small>
+                                                <br>
+                                                <small class="text-muted">@claim.SubmissionDate.ToString("hh:mm tt")</small>
+                                            </td>
+                                            <td>
+                                                <div class="btn-group" role="group">
+                                                    <a href="@Url.Action("ClaimDetails", new { id = claim.Id })"
+                                                       class="btn btn-sm btn-outline-primary"
+                                                       title="View Details">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                    <a href="@Url.Action("ReviewClaim", new { id = claim.Id })"
+                                                       class="btn btn-sm btn-outline-success"
+                                                       title="Review Claim">
+                                                        <i class="fas fa-clipboard-check"></i>
+                                                    </a>
+                                                    <button type="button"
+                                                            class="btn btn-sm btn-outline-warning"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#requestInfoModal-@claim.Id"
+                                                            title="Request Information">
+                                                        <i class="fas fa-question-circle"></i>
+                                                    </button>
+                                                </div>
+
+                                                <!-- Request Information Modal -->
+                                                <div class="modal fade" id="requestInfoModal-@claim.Id" tabindex="-1">
+                                                    <div class="modal-dialog">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title">Request Additional Information</h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <p>Request additional information from <strong>@claim.Lecturer?.FirstName @claim.Lecturer?.LastName</strong> for their @claim.Month.ToString("MMMM yyyy") claim.</p>
+                                                                <form method="post" action="@Url.Action("RequestInformation", new { id = claim.Id })">
+                                                                    <div class="mb-3">
+                                                                        <label for="message-@claim.Id" class="form-label">Message to Lecturer</label>
+                                                                        <textarea class="form-control" id="message-@claim.Id" name="message" rows="4"
+                                                                          placeholder="Please specify what additional information or clarification you need..." required></textarea>
+                                                                    </div>
+                                                                    <div class="d-flex justify-content-end">
+                                                                        <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancel</button>
+                                                                        <button type="submit" class="btn btn-warning">
+                                                                            <i class="fas fa-paper-plane me-1"></i>Send Request
+                                                                        </button>
+                                                                    </div>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Summary Card -->
+                <div class="row mt-4">
+                    <div class="col-md-3">
+                        <div class="card bg-warning text-white">
+                            <div class="card-body text-center">
+                                <h6>Total Pending</h6>
+                                <h3>@Model.Count()</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-info text-white">
+                            <div class="card-body text-center">
+                                <h6>Total Amount</h6>
+                                <h3>R @Model.Sum(c => c.TotalAmount).ToString("N2")</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-success text-white">
+                            <div class="card-body text-center">
+                                <h6>Avg. Hours</h6>
+                                <h3>@Model.Average(c => c.HoursWorked).ToString("N1")</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-primary text-white">
+                            <div class="card-body text-center">
+                                <h6>Departments</h6>
+                                <h3>@Model.Select(c => c.Lecturer?.Department).Distinct().Count()</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="card">
+                    <div class="card-body text-center py-5">
+                        <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                        <h4 class="text-success">No Pending Claims</h4>
+                        <p class="text-muted">
+                            All claims have been processed. Great work!
+                        </p>
+                        <a href="@Url.Action("AllClaims")" class="btn btn-primary mt-3">
+                            <i class="fas fa-list me-1"></i>View All Claims
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Auto-submit form when month or department changes
+            $('#month, #department').change(function() {
+                $(this).closest('form').submit();
+            });
+
+            // Show loading state on form submission
+            $('form').submit(function() {
+                $('button[type="submit"]').prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-1"></i>Filtering...');
+            });
+        });
+    </script>
+}
