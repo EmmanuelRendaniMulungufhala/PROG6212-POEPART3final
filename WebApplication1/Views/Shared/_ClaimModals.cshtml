@@ -1,0 +1,139 @@
+﻿<!-- Approve Modal -->
+<div class="modal fade" id="approveModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Approve Claim</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form asp-action="ApproveClaim" method="post">
+                <div class="modal-body">
+                    <p>Are you sure you want to approve the claim for <strong id="approveLecturerName"></strong>?</p>
+                    <input type="hidden" id="approveClaimId" name="claimId" />
+                    <div class="mb-3">
+                        <label for="approvalNotes" class="form-label">Approval Notes (Optional)</label>
+                        <textarea id="approvalNotes" name="approvalNotes" class="form-control" rows="3"
+                                  placeholder="Add any notes about this approval..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success">Approve Claim</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Reject Modal -->
+<div class="modal fade" id="rejectModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Reject Claim</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form asp-action="RejectClaim" method="post">
+                <div class="modal-body">
+                    <p>Are you sure you want to reject the claim for <strong id="rejectLecturerName"></strong>?</p>
+                    <input type="hidden" id="rejectClaimId" name="claimId" />
+                    <div class="mb-3">
+                        <label for="rejectionNotes" class="form-label">Rejection Reason *</label>
+                        <textarea id="rejectionNotes" name="rejectionNotes" class="form-control" rows="3"
+                                  placeholder="Please provide the reason for rejection..." required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger">Reject Claim</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Update Status Modal -->
+<div class="modal fade" id="updateStatusModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Update Claim Status</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form asp-action="UpdateClaimStatus" method="post">
+                <div class="modal-body">
+                    <p>Update status for claim by <strong id="updateLecturerName"></strong></p>
+                    <input type="hidden" id="updateClaimId" name="claimId" />
+                    <div class="mb-3">
+                        <label for="status" class="form-label">New Status</label>
+                        <select id="status" name="status" class="form-control" required>
+                            <option value="">Select Status</option>
+                            <option value="Pending">Pending</option>
+                            <option value="UnderReview">Under Review</option>
+                            <option value="Approved">Approved</option>
+                            <option value="Rejected">Rejected</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="notes" class="form-label">Notes</label>
+                        <textarea id="notes" name="notes" class="form-control" rows="3"
+                                  placeholder="Add notes about this status change..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-warning">Update Status</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Approve modal
+            var approveModal = document.getElementById('approveModal');
+            if (approveModal) {
+                approveModal.addEventListener('show.bs.modal', function(event) {
+                    var button = event.relatedTarget;
+                    var claimId = button.getAttribute('data-claim-id');
+                    var lecturerName = button.getAttribute('data-claim-name');
+
+                    document.getElementById('approveClaimId').value = claimId;
+                    document.getElementById('approveLecturerName').textContent = lecturerName;
+                });
+            }
+
+            // Reject modal
+            var rejectModal = document.getElementById('rejectModal');
+            if (rejectModal) {
+                rejectModal.addEventListener('show.bs.modal', function(event) {
+                    var button = event.relatedTarget;
+                    var claimId = button.getAttribute('data-claim-id');
+                    var lecturerName = button.getAttribute('data-claim-name');
+
+                    document.getElementById('rejectClaimId').value = claimId;
+                    document.getElementById('rejectLecturerName').textContent = lecturerName;
+                });
+            }
+
+            // Update status modal
+            var updateStatusModal = document.getElementById('updateStatusModal');
+            if (updateStatusModal) {
+                updateStatusModal.addEventListener('show.bs.modal', function(event) {
+                    var button = event.relatedTarget;
+                    var claimId = button.getAttribute('data-claim-id');
+                    var lecturerName = button.getAttribute('data-claim-name');
+                    var currentStatus = button.getAttribute('data-current-status');
+
+                    document.getElementById('updateClaimId').value = claimId;
+                    document.getElementById('updateLecturerName').textContent = lecturerName;
+
+                    var statusSelect = document.getElementById('status');
+                    statusSelect.value = currentStatus;
+                });
+            }
+        });
+    </script>
+}

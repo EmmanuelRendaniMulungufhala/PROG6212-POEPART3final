@@ -48,6 +48,18 @@ namespace WebApplication1.Models
         [Display(Name = "Approval Date")]
         public DateTime? ApprovalDate { get; set; }
 
+        // ADD THESE MISSING PROPERTIES:
+        [Display(Name = "Last Status Update Date")]
+        public DateTime? LastStatusUpdateDate { get; set; }
+
+        [Display(Name = "Reviewed By")]
+        [StringLength(100)]
+        public string? ReviewedBy { get; set; }
+
+        [Display(Name = "Review Notes")]
+        [StringLength(500)]
+        public string? ReviewNotes { get; set; }
+
         [Display(Name = "Approved/Rejected By")]
         [StringLength(100)]
         public string? ApprovedBy { get; set; }
@@ -106,15 +118,20 @@ namespace WebApplication1.Models
             TotalAmount = HoursWorked * HourlyRate;
         }
 
-        public void UpdateStatus(ClaimStatus newStatus, string? notes = null, string? approvedBy = null)
+        public void UpdateStatus(ClaimStatus newStatus, string? notes = null, string? reviewedBy = null)
         {
             var oldStatus = Status;
             Status = newStatus;
 
+            // UPDATE: Set the missing properties
+            LastStatusUpdateDate = DateTime.Now;
+            ReviewedBy = reviewedBy ?? "Unknown";
+            ReviewNotes = notes;
+
             if (newStatus == ClaimStatus.Approved || newStatus == ClaimStatus.Rejected)
             {
                 ApprovalDate = DateTime.Now;
-                ApprovedBy = approvedBy ?? "Unknown";
+                ApprovedBy = reviewedBy ?? "Unknown";
                 ApprovalNotes = notes;
 
                 // Calculate and store processing days when approved/rejected
@@ -131,7 +148,7 @@ namespace WebApplication1.Models
                 ClaimId = Id,
                 OldStatus = oldStatus,
                 NewStatus = newStatus,
-                ChangedBy = approvedBy ?? "Unknown",
+                ChangedBy = reviewedBy ?? "Unknown",
                 ChangeNotes = notes,
                 ChangedDate = DateTime.Now
             });

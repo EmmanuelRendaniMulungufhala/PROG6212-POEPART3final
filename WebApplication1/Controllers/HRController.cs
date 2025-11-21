@@ -68,6 +68,7 @@ namespace WebApplication1.Controllers
 
             return View(model);
         }
+
         public async Task<IActionResult> ProcessClaims(string? status, string? month, string? lecturer)
         {
             var query = _context.Claims
@@ -94,6 +95,161 @@ namespace WebApplication1.Controllers
 
             var claims = await query
                 .OrderByDescending(c => c.SubmissionDate)
+                .ToListAsync();
+
+            return View(claims);
+        }
+
+        // Status-specific claim views
+        public async Task<IActionResult> ApprovedClaims(string? month, string? lecturer, string? department)
+        {
+            var query = _context.Claims
+                .Include(c => c.Lecturer)
+                .Where(c => c.Status == ClaimStatus.Approved)
+                .AsQueryable();
+
+            // Apply filters
+            if (!string.IsNullOrEmpty(month) && DateTime.TryParse(month + "-01", out var monthFilter))
+            {
+                query = query.Where(c => c.Month.Year == monthFilter.Year && c.Month.Month == monthFilter.Month);
+            }
+
+            if (!string.IsNullOrEmpty(lecturer))
+            {
+                query = query.Where(c => c.Lecturer!.FirstName.Contains(lecturer) ||
+                                        c.Lecturer!.LastName.Contains(lecturer) ||
+                                        c.Lecturer!.Email.Contains(lecturer));
+            }
+
+            if (!string.IsNullOrEmpty(department))
+            {
+                query = query.Where(c => c.Lecturer!.Department == department);
+            }
+
+            var claims = await query
+                .OrderByDescending(c => c.ApprovalDate)
+                .ThenByDescending(c => c.SubmissionDate)
+                .ToListAsync();
+
+            ViewBag.Departments = await _context.Users
+                .Where(u => u.Role == UserRole.Lecturer)
+                .Select(u => u.Department)
+                .Distinct()
+                .ToListAsync();
+
+            return View(claims);
+        }
+
+        public async Task<IActionResult> PendingClaims(string? month, string? lecturer, string? department)
+        {
+            var query = _context.Claims
+                .Include(c => c.Lecturer)
+                .Where(c => c.Status == ClaimStatus.Pending)
+                .AsQueryable();
+
+            // Apply filters
+            if (!string.IsNullOrEmpty(month) && DateTime.TryParse(month + "-01", out var monthFilter))
+            {
+                query = query.Where(c => c.Month.Year == monthFilter.Year && c.Month.Month == monthFilter.Month);
+            }
+
+            if (!string.IsNullOrEmpty(lecturer))
+            {
+                query = query.Where(c => c.Lecturer!.FirstName.Contains(lecturer) ||
+                                        c.Lecturer!.LastName.Contains(lecturer) ||
+                                        c.Lecturer!.Email.Contains(lecturer));
+            }
+
+            if (!string.IsNullOrEmpty(department))
+            {
+                query = query.Where(c => c.Lecturer!.Department == department);
+            }
+
+            var claims = await query
+                .OrderByDescending(c => c.SubmissionDate)
+                .ToListAsync();
+
+            ViewBag.Departments = await _context.Users
+                .Where(u => u.Role == UserRole.Lecturer)
+                .Select(u => u.Department)
+                .Distinct()
+                .ToListAsync();
+
+            return View(claims);
+        }
+
+        public async Task<IActionResult> RejectedClaims(string? month, string? lecturer, string? department)
+        {
+            var query = _context.Claims
+                .Include(c => c.Lecturer)
+                .Where(c => c.Status == ClaimStatus.Rejected)
+                .AsQueryable();
+
+            // Apply filters
+            if (!string.IsNullOrEmpty(month) && DateTime.TryParse(month + "-01", out var monthFilter))
+            {
+                query = query.Where(c => c.Month.Year == monthFilter.Year && c.Month.Month == monthFilter.Month);
+            }
+
+            if (!string.IsNullOrEmpty(lecturer))
+            {
+                query = query.Where(c => c.Lecturer!.FirstName.Contains(lecturer) ||
+                                        c.Lecturer!.LastName.Contains(lecturer) ||
+                                        c.Lecturer!.Email.Contains(lecturer));
+            }
+
+            if (!string.IsNullOrEmpty(department))
+            {
+                query = query.Where(c => c.Lecturer!.Department == department);
+            }
+
+            var claims = await query
+                .OrderByDescending(c => c.LastStatusUpdateDate)
+                .ThenByDescending(c => c.SubmissionDate)
+                .ToListAsync();
+
+            ViewBag.Departments = await _context.Users
+                .Where(u => u.Role == UserRole.Lecturer)
+                .Select(u => u.Department)
+                .Distinct()
+                .ToListAsync();
+
+            return View(claims);
+        }
+
+        public async Task<IActionResult> UnderReviewClaims(string? month, string? lecturer, string? department)
+        {
+            var query = _context.Claims
+                .Include(c => c.Lecturer)
+                .Where(c => c.Status == ClaimStatus.UnderReview)
+                .AsQueryable();
+
+            // Apply filters
+            if (!string.IsNullOrEmpty(month) && DateTime.TryParse(month + "-01", out var monthFilter))
+            {
+                query = query.Where(c => c.Month.Year == monthFilter.Year && c.Month.Month == monthFilter.Month);
+            }
+
+            if (!string.IsNullOrEmpty(lecturer))
+            {
+                query = query.Where(c => c.Lecturer!.FirstName.Contains(lecturer) ||
+                                        c.Lecturer!.LastName.Contains(lecturer) ||
+                                        c.Lecturer!.Email.Contains(lecturer));
+            }
+
+            if (!string.IsNullOrEmpty(department))
+            {
+                query = query.Where(c => c.Lecturer!.Department == department);
+            }
+
+            var claims = await query
+                .OrderByDescending(c => c.SubmissionDate)
+                .ToListAsync();
+
+            ViewBag.Departments = await _context.Users
+                .Where(u => u.Role == UserRole.Lecturer)
+                .Select(u => u.Department)
+                .Distinct()
                 .ToListAsync();
 
             return View(claims);
@@ -523,6 +679,63 @@ namespace WebApplication1.Controllers
             {
                 return Json(new { error = ex.Message });
             }
+        }
+
+        // Helper methods for navigation counts
+        private async Task<int> GetPendingClaimsCount()
+        {
+            return await _context.Claims.CountAsync(c => c.Status == ClaimStatus.Pending);
+        }
+
+        private async Task<int> GetApprovedClaimsCount()
+        {
+            return await _context.Claims.CountAsync(c => c.Status == ClaimStatus.Approved);
+        }
+
+        private async Task<int> GetRejectedClaimsCount()
+        {
+            return await _context.Claims.CountAsync(c => c.Status == ClaimStatus.Rejected);
+        }
+
+        private async Task<int> GetUnderReviewClaimsCount()
+        {
+            return await _context.Claims.CountAsync(c => c.Status == ClaimStatus.UnderReview);
+        }
+
+        // Additional HR actions
+        public async Task<IActionResult> UserRoles()
+        {
+            // Implementation for user roles management
+            return View();
+        }
+
+        public async Task<IActionResult> FinancialAnalytics()
+        {
+            // Implementation for financial analytics
+            return View();
+        }
+
+        public async Task<IActionResult> SystemAudit()
+        {
+            // Implementation for system audit
+            return View();
+        }
+
+        public async Task<IActionResult> DownloadClaimReport(Guid id)
+        {
+            var claim = await _context.Claims
+                .Include(c => c.Lecturer)
+                .Include(c => c.SupportingDocuments)
+                .FirstOrDefaultAsync(c => c.Id == id);
+
+            if (claim == null)
+            {
+                return NotFound();
+            }
+
+            // For now, return the details view as PDF
+            // In a real application, you would generate a proper PDF report
+            return View("ClaimDetails", claim);
         }
     }
 }

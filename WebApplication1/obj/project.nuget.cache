@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "0szJn1w1ZN8=",
+  "dgSpecHash": "iAHJZIPWPcs=",
   "success": true,
-  "projectFilePath": "C:\\Users\\lab_services_student\\source\\repos\\WebApplication1\\WebApplication1\\WebApplication1.csproj",
+  "projectFilePath": "C:\\Users\\lab_services_student\\Documents\\GitHub\\PROG6212-POEPART3final\\WebApplication1\\WebApplication1.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\lab_services_student\\.nuget\\packages\\azure.core\\1.38.0\\azure.core.1.38.0.nupkg.sha512",
     "C:\\Users\\lab_services_student\\.nuget\\packages\\azure.identity\\1.11.4\\azure.identity.1.11.4.nupkg.sha512",
