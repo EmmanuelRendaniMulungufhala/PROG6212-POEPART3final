@@ -11,4 +11,6 @@ Coordinator can see created claims
 so as Manger And HR
 NB to login into roles please us the DEMO Accounts That show up on the Home Page
 NB: the pages that dont run are not of any use 
+Here is the YouTube Link: https://youtu.be/c14yrwxe0Rg.  
+Here is the github LINK: https://github.com/EmmanuelRendaniMulungufhala/PROG6212-POEPART3final.git  
 
